@@ -4,11 +4,15 @@
 
 当前适配乐动力 **10.14.2 / versionCode 10092**。自动作业流程使用 Activity、`WEB_URL` 和原生桥接，不依赖屏幕坐标。浏览器中的点击只是供用户手动操作 Android 界面。
 
+## x86 上的微信启动兼容性
+
+**微信 8.0.79 已在 x86_64 Linux 上打开到欢迎页。** 此分支使用 QEMU 模拟 ARM64 客体，再运行 ARM64 ReDroid 14。实测截图显示了 `Log In` 和 `Sign Up` 按钮。复现步骤和测试范围见 [x86 微信启动验证](deploy/x86-wechat.md)。
+
 ## 运行条件
 
 - Linux Docker Engine 与 Docker Compose v2。
 - 宿主内核：4KiB 页、binderfs、memfd、IPv6、DMA-BUF heap。
-- 当前发布包支持ARM64 Linux，推荐至少4GB内存。AMD64不在本版本适配范围内。
+- 下列默认部署步骤适用于 ARM64 Linux，推荐至少 4 GB 内存。x86_64 上的微信启动验证使用上节的 ARM64 虚拟机。
 - Android 服务需要 `privileged`；容器共享宿主内核，Docker无法替代缺失的内核功能。
 - Git LFS、用户自己的可用账号和网络。仓库通过Git LFS提供原版乐动力10.14.2和微信8.0.79 APK。
 
