@@ -6,11 +6,18 @@
 
 ## 运行条件
 
-Apple Silicon Mac 用户可使用 [macOS / Lima 部署入口](deploy/macos/README.md)，在专用 ARM64 Linux 虚拟机中运行本项目。
+以下安装步骤适用于 ARM64 Linux。其他平台有单独的部署入口。
+
+| 平台 | 部署入口 |
+|---|---|
+| ARM64 Linux | 本页的 Docker Compose 步骤 |
+| Apple Silicon macOS | [Lima / ARM64 虚拟机](deploy/macos/README.md) |
+| x86_64 Linux | [x86 Docker 配置](docs/LINUX-X86.md) |
+| Windows x86_64 | [Android Emulator 和 WHPX](docs/WINDOWS.md) |
 
 - Linux Docker Engine 与 Docker Compose v2。
 - 宿主内核：4KiB 页、binderfs、memfd、IPv6、DMA-BUF heap。
-- 当前发布包支持ARM64 Linux，推荐至少4GB内存。AMD64不在本版本适配范围内。
+- 默认容器配置支持 ARM64 Linux，推荐至少 4 GB 内存。
 - Android 服务需要 `privileged`；容器共享宿主内核，Docker无法替代缺失的内核功能。
 - Git LFS、用户自己的可用账号和网络。仓库通过Git LFS提供原版乐动力10.14.2和微信8.0.79 APK。
 
@@ -94,7 +101,7 @@ docker compose up -d --build
 同一份班级作业的任务ID更新会在运行时自动识别，已有登录态、配置和定时设置可以继续使用。
 
 - Android数据、登录凭据、Cookie、作业ID、任务响应、记录、截图均留在外部数据目录。
-- `.env`、镜像、运行数据、测试和测试结果均不纳入Git和Docker构建上下文。仓库仅纳入`apks/`下指定的两个原版APK及校验文件，APK通过Git LFS保存，仍排除在Docker构建上下文之外。
+- 本机的 `.env`、镜像、运行数据和测试结果不纳入 Git 或 Docker 构建上下文。默认部署的两个原版 APK 通过 Git LFS 保存，排除在 Docker 构建上下文和源码归档之外。
 - `docker compose down` 停止容器并保留数据；重新启动可复用当前登录状态。
 - 迁移自己的部署时需保留整个数据目录，包括`android/`和`controller/`；不要把自己的数据目录提供给其他用户。
 - Android基础镜像按摘要固定。`Dockerfile.android` 在构建时禁用Android init对宿主全局sysctl的写操作；不会修改宿主配置。

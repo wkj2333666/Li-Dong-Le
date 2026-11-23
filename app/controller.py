@@ -29,7 +29,12 @@ import net_compat
 LOCK = threading.Lock()
 CACHE = (0, b'')
 KEYS = {'back': 4, 'home': 3, 'recent': 187, 'enter': 66, 'delete': 67, 'wake': 224}
-WEB = Path('/web')
+APP_ACTIVITIES = {
+    'open-wechat': 'com.tencent.mm/.ui.LauncherUI',
+    'open-ldl': 'cn.ledongli.ldl/.activity.SplashScreenActivity',
+}
+ROOT = Path(__file__).resolve().parent
+WEB = Path(os.environ.get('LDL_WEB_DIR', ROOT.parent / 'web'))
 CONFIG = workflow.BASE / 'config.json'
 
 
@@ -114,7 +119,7 @@ def scheduler():
                 # Mark before dispatch: restart cannot cause an automatic replay.
                 saved['attempted'] = True
                 workflow.save(path, saved)
-                result = subprocess.run([sys.executable, '/app/ldl_automation.py', 'run', '--now'], timeout=300)
+                result = subprocess.run([sys.executable, str(ROOT / 'ldl_automation.py'), 'run', '--now'], timeout=300)
                 print(json.dumps({'event': 'scheduled_run_finished', 'exit_code': result.returncode}), flush=True)
         except Exception as error:
             print(json.dumps({'event': 'scheduler_error', 'error_type': type(error).__name__}), flush=True)
@@ -205,7 +210,10 @@ class Handler(BaseHTTPRequestHandler):
             action = value.get('action')
             frame = screen()
             width, height = struct.unpack('>II', frame[16:24])
-            if action == 'tap':
+            if action in APP_ACTIVITIES:
+                device.shell('input', 'keyevent', 'KEYCODE_WAKEUP')
+                args = ['am', 'start', '-W', '-n', APP_ACTIVITIES[action]]
+            elif action == 'tap':
                 args = ['input', 'tap', coordinate(value['x'], width), coordinate(value['y'], height)]
             elif action == 'swipe':
                 args = ['input', 'swipe', coordinate(value['x'], width), coordinate(value['y'], height),
@@ -244,7 +252,8 @@ def main():
             threading.Thread(target=connect_android, daemon=True).start()
             threading.Thread(target=net_compat.guardian, daemon=True).start()
             threading.Thread(target=scheduler, daemon=True).start()
-            server = ThreadingHTTPServer(('0.0.0.0', 6080), Handler)
+            server = ThreadingHTTPServer((os.environ.get('LDL_LISTEN_HOST', '0.0.0.0'),
+                                          int(os.environ.get('LDL_LISTEN_PORT', '6080'))), Handler)
             server.daemon_threads = True
             server.serve_forever()
         elif args.command in ('run', 'check', 'plan'):

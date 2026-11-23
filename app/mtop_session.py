@@ -27,7 +27,7 @@ def save_private(name, data):
     directory = private_dir()
     fd, temporary = tempfile.mkstemp(prefix=".pending-", dir=directory)
     try:
-        os.fchmod(fd, 0o600)
+        # mkstemp already creates a file with owner-only permissions on POSIX.
         with os.fdopen(fd, "w", encoding="utf-8") as stream:
             json.dump(data, stream, ensure_ascii=False, indent=2)
             stream.flush()

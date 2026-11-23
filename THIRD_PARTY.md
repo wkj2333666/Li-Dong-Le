@@ -16,4 +16,6 @@ Frida保留其wxWindows Library Licence及LGPL例外条款，许可证随Android
 
 仓库通过Git LFS保存`apks/ledongli.apk`（乐动力10.14.2）和`apks/wechat.apk`（微信8.0.79），均为未修改的原始安装包。它们由Compose只读挂载供安装，不进入Docker构建上下文或控制镜像。校验值见`apks/SHA256SUMS`。
 
+x86 Linux 使用单独固定摘要的 Android 12 / Houdini 镜像。x86 Linux 和 Windows 使用的 ARM32 微信 8.0.42 从腾讯官方站点下载，来源与 SHA-256 见 `apks/manifest.json`。Windows 的 Android Emulator 和 Google APIs 系统镜像由 Android SDK 管理器安装。
+
 第三方APK的版权及使用条款归各自权利人所有，不属于本项目MIT许可证的授权范围。本项目与这些应用的运营方没有隶属关系；原始安装包不包含部署者的账号、登录态或作业运行数据。

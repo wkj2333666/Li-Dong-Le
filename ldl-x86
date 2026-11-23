@@ -1,0 +1,18 @@
+#!/bin/sh
+set -eu
+cd -- "$(dirname -- "$0")"
+if [ "$(uname -s)" != Linux ] || [ "$(uname -m)" != x86_64 ]; then
+    echo 'ldl-x86 requires an x86_64 Linux host.' >&2
+    exit 1
+fi
+export COMPOSE_FILE=compose.yaml:compose.linux-x86.yaml
+export COMPOSE_PROJECT_NAME=${LDL_X86_PROJECT_NAME:-ldl-automation-x86}
+export UI_PORT=${LDL_X86_UI_PORT:-16080}
+case "${1:-}" in
+    doctor) exec sh deploy/doctor.sh amd64 ;;
+    compose)
+        shift
+        exec docker compose "$@"
+        ;;
+    *) exec ./ldl "$@" ;;
+esac

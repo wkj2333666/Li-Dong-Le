@@ -62,7 +62,8 @@ def guardian():
                 continue
             import frida
             device.connect(timeout=10)
-            device.shell('setprop', 'ctl.start', 'ldl-netcompat')
+            if os.environ.get('LDL_NATIVE_EMULATOR') != '1':
+                device.shell('setprop', 'ctl.start', 'ldl-netcompat')
             pids = device.shell('pidof', 'cn.ledongli.ldl').split()
             if not pids:
                 time.sleep(1)

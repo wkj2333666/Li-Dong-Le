@@ -1,0 +1,33 @@
+name: ldl-automation-x86
+services:
+  android:
+    platform: linux/amd64
+    cpus: ${ANDROID_CPUS:-4}
+    mem_limit: ${ANDROID_MEMORY:-6g}
+    build:
+      args:
+        REDROID_IMAGE: ${LDL_X86_IMAGE:-erstt/redroid@sha256:7c1f4355fa245e55cc15fa46ff3be8c347cee73c3eeb5c8b7a6def93013eb54d}
+    command:
+      - androidboot.use_memfd=1
+      - androidboot.redroid_gpu_mode=guest
+      - androidboot.redroid_width=720
+      - androidboot.redroid_height=1280
+      - androidboot.redroid_dpi=240
+      - androidboot.redroid_fps=10
+      - androidboot.redroid_net_ndns=2
+      - androidboot.redroid_net_dns1=${ANDROID_DNS_1:-223.5.5.5}
+      - androidboot.redroid_net_dns2=${ANDROID_DNS_2:-1.1.1.1}
+      - ro.secure=0
+      - ro.dalvik.vm.native.bridge=libhoudini.so
+      - ro.enable.native.bridge.exec64=1
+    volumes:
+      - ${LDL_X86_DATA_DIR:-../ldl-automation-x86-data}/android:/data
+  controller:
+    platform: linux/amd64
+    cpus: 2
+    mem_limit: 1g
+    environment:
+      LDL_WECHAT_APK: wechat-official-arm32.apk
+    volumes:
+      - ${LDL_X86_DATA_DIR:-../ldl-automation-x86-data}/controller:/data
+      - ${LDL_X86_APK_DIR:-./apks}:/apks:ro
